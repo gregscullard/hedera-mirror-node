@@ -9,9 +9,9 @@ package com.hedera.mirror.importer.downloader;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -43,36 +43,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.hedera.mirror.importer.TestUtils;
-import com.hedera.mirror.importer.addressbook.AddressBookService;
+import com.hedera.mirror.common.domain.StreamType;
 import com.hedera.mirror.common.domain.addressbook.AddressBook;
 import com.hedera.mirror.common.domain.entity.EntityId;
 import com.hedera.mirror.common.domain.entity.EntityType;
+import com.hedera.mirror.importer.TestUtils;
+import com.hedera.mirror.importer.addressbook.AddressBookService;
 import com.hedera.mirror.importer.domain.FileStreamSignature;
 import com.hedera.mirror.importer.domain.FileStreamSignature.SignatureType;
-import com.hedera.mirror.common.domain.StreamType;
 import com.hedera.mirror.importer.exception.SignatureVerificationException;
 
 @ExtendWith(MockitoExtension.class)
 class NodeSignatureVerifierTest {
 
+    private static final EntityId nodeId = new EntityId(0L, 0L, 3L, EntityType.ACCOUNT);
+    private static final MeterRegistry meterRegistry = new SimpleMeterRegistry();
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
 
-    private static final EntityId nodeId = new EntityId(0L, 0L, 3L, EntityType.ACCOUNT);
-    private static final MeterRegistry meterRegistry = new LoggingMeterRegistry();
     private Signature signer;
-
     @Mock
     private AddressBookService addressBookService;
-
     @Mock
     private CommonDownloaderProperties commonDownloaderProperties;
-
     @Mock
     private AddressBook currentAddressBook;
 
-    NodeSignatureVerifier nodeSignatureVerifier;
+    private NodeSignatureVerifier nodeSignatureVerifier;
 
     @BeforeAll
     static void generateKeys() throws NoSuchAlgorithmException {
