@@ -97,7 +97,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     private final StringBuilder jsonArray = new StringBuilder();
 
     // constants (e.g. Kafka properties)
-    private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.129.99:9092";
+    private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.0.132:9092";
     private final static String TRANSACTION_TOPIC_NAME = "transaction_record";
     private final static String RECORD_FILE_TOPIC_NAME = "record_file";
 
