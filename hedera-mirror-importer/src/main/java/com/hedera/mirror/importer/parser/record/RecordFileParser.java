@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HexFormat;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,8 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     private final RecordItemListener recordItemListener;
     private final RecordStreamFileListener recordStreamFileListener;
     private final MirrorDateRangePropertiesProcessor mirrorDateRangePropertiesProcessor;
+
+    private static final HexFormat hex = HexFormat.of();
 
     // Metrics
     private final Map<Integer, Timer> latencyMetrics;
@@ -192,9 +195,9 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                     "consensus_start_timestamp", true);
             recordFileJsonAppender("\"" + recordFile.getConsensusEnd().toString() + "\"", recordFileContents,
                     "consensus_end_timestamp", true);
-            String dataHash = Base64.encodeBase64String(recordFile.getMetadataHash().getBytes(StandardCharsets.UTF_8));
+            String dataHash = hex.formatHex(recordFile.getMetadataHash().getBytes(StandardCharsets.UTF_8));
             recordFileJsonAppender("\"" + dataHash + "\"", recordFileContents, "data_hash", true);
-            String prevHash = Base64.encodeBase64String(recordFile.getPreviousHash().getBytes(StandardCharsets.UTF_8));
+            String prevHash = hex.formatHex(recordFile.getPreviousHash().getBytes(StandardCharsets.UTF_8));
             recordFileJsonAppender("\"" + prevHash + "\"", recordFileContents, "prev_hash", true);
             recordFileJsonAppender("" + recordFile.getIndex(), recordFileContents, "number", true);
             String addressBookAsString = (recordFile.getAddressBook() == null) ? " "
