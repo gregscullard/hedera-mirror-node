@@ -90,7 +90,8 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     private final RecordStreamFileListener recordStreamFileListener;
     private final MirrorDateRangePropertiesProcessor mirrorDateRangePropertiesProcessor;
 
-    private static final HexFormat hex = HexFormat.of();
+    private static Producer<String, String> kafkaProducer = null;
+    private static int kafkaSuccessiveErrorCount = 0;
 
     // Metrics
     private final Map<Integer, Timer> latencyMetrics;
@@ -102,6 +103,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     private final StringBuilder jsonArray = new StringBuilder();
 
     // constants (e.g. Kafka properties)
+    private static final HexFormat hex = HexFormat.of();
     private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.0.132:9092";
     private final static String TRANSACTION_TOPIC_NAME = "transaction_record";
     private final static String RECORD_FILE_TOPIC_NAME = "record_file";
@@ -271,12 +273,14 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             recordFile.finishLoad(count);
             recordStreamFileListener.onEnd(recordFile);
 
-            log.warn("MYK: About to start doing things for Kafka...");
+            log.warn("MYK: About to start Kafka messages...");
             String kafkaMessageKey = destFile.toString();
             kafkaMessageKey = kafkaMessageKey.substring(kafkaMessageKey.lastIndexOf("/") + 1);
             long kaftaStarttime = System.currentTimeMillis();
             try {
-                Producer<String, String> kafkaProducer = createKafkaProducer();
+                if (kafkaProducer == null) {
+                    kafkaProducer = createKafkaProducer();
+                };
                 ProducerRecord<String, String> transactionKafkaRecord = new ProducerRecord<>(TRANSACTION_TOPIC_NAME,
                         kafkaMessageKey, contents);
                 ProducerRecord<String, String> recordFileKafkaRecord = new ProducerRecord<>(RECORD_FILE_TOPIC_NAME,
@@ -285,20 +289,34 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 RecordMetadata transactionMetadata = kafkaProducer.send(transactionKafkaRecord).get();
                 // should we call kafkaProducer.flush() ?
                 long elapsedTime1 = System.currentTimeMillis() - kaftaStarttime;
-                log.info("Produced Transaction Kafka message (key={}, value={}), meta(partition={}, offset={}, time={}",
-                        transactionKafkaRecord.key(), transactionKafkaRecord.value(), transactionMetadata.partition(),
-                        transactionMetadata.offset(), elapsedTime1);
+                log.info("Produced Transaction Kafka message (key={}), meta(partition={}, offset={}, time={}",
+                        transactionKafkaRecord.key(), transactionMetadata.partition(), transactionMetadata.offset(),
+                        elapsedTime1);
                 long kaftaStarttime2 = System.currentTimeMillis();
                 RecordMetadata recordFileMetadata = kafkaProducer.send(recordFileKafkaRecord).get();
                 // should we call kafkaProducer.flush() ?
                 long elapsedTime2 = System.currentTimeMillis() - kaftaStarttime2;
-                log.info("Produced Record File Kafka message (key={}, value={}), meta(partition={}, offset={}, time={}",
-                        recordFileKafkaRecord.key(), recordFileKafkaRecord.value(), recordFileMetadata.partition(),
-                        recordFileMetadata.offset(), elapsedTime2);
-                log.warn("MYK: Done with Kafka processing for this record.");
+                log.info("Produced Record File Kafka message (key={}), meta(partition={}, offset={}, time={}",
+                        recordFileKafkaRecord.key(), recordFileMetadata.partition(), recordFileMetadata.offset(),
+                        elapsedTime2);
+                kafkaSuccessiveErrorCount = 0;
             } catch (Exception e) {
-                log.error("Error posting message to Kafka", e);
-                // kafkaProducer.close();
+                kafkaSuccessiveErrorCount++;
+                log.error("Error #{} posting message to Kafka", kafkaSuccessiveErrorCount, e);
+                if (kafkaSuccessiveErrorCount > 9) {
+                    log.error("Flushing and closing Kafka producer, just in case.");
+                    try {
+                        kafkaProducer.flush();
+                    } catch (Exception e2) {
+                        log.error("Exception trying to flush Kafka producer", e2);
+                    }
+                    try {
+                        kafkaProducer.close();
+                    } catch (Exception e2) {
+                        log.error("Exception trying to close Kafka producer", e2);
+                    }
+                    kafkaProducer = null;
+                }
             }
         } catch (Exception ex) {
             recordStreamFileListener.onError();
@@ -574,7 +592,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 output.append(" \"sender_account_shard\":\"" + senderId.getShardNum() + "\",");
                 output.append(" \"sender_account_realm\":\"" + senderId.getRealmNum() + "\",");
                 output.append(" \"sender_account_number\":\"" + senderId.getEntityNum() + "\",");
-		output.append(" \"receiver_account\":\"" + receiverId.toString() + "\",");
+                output.append(" \"receiver_account\":\"" + receiverId.toString() + "\",");
                 output.append(" \"receiver_account_shard\":\"" + receiverId.getShardNum() + "\",");
                 output.append(" \"receiver_account_realm\":\"" + receiverId.getRealmNum() + "\",");
                 output.append(" \"receiver_account_number\":\"" + receiverId.getEntityNum() + "\",");
