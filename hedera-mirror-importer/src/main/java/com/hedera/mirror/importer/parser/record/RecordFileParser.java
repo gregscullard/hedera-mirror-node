@@ -204,9 +204,9 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             recordFileJsonAppender("" + recordFile.getIndex(), recordFileContents, "number", true);
             String addressBookAsString = (recordFile.getAddressBook() == null) ? " "
                     : " \"" + recordFile.getAddressBook().toString() + "\" ";
-            recordFileJsonAppender("\"[" + addressBookAsString + "]\"", recordFileContents, "address_books", true);
+            recordFileJsonAppender("[" + addressBookAsString + "]", recordFileContents, "address_books", true);
             StringBuilder signatureFiles = new StringBuilder();
-            signatureFiles.append("\"[");
+            signatureFiles.append("[");
             Map<String, String> signatures = recordFile.getSignatureFiles();
             boolean firstSignature = true;
             for (Map.Entry<String, String> entry : signatures.entrySet()) {
@@ -218,17 +218,17 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 signatureFiles.append(" {\"account_number\":\"" + entry.getKey() + "\",");
                 signatureFiles.append(" \"signature_file_hash\":\"" + entry.getValue() + "\"}");
             }
-            signatureFiles.append(" ]\"");
+            signatureFiles.append(" ]");
             recordFileJsonAppender(signatureFiles.toString(), recordFileContents, "signature_files", true);
   
             StringBuilder fields = new StringBuilder();
-            fields.append("\"{");
+            fields.append("{");
             fields.append(" \"count\":\"" + recordFile.getCount() + "\",");
             fields.append(" \"gas_used\":\"" + recordFile.getGasUsed() + "\",");
             fields.append(" \"hapi_version\":\"" + recordFile.getHapiVersion() + "\",");
             fields.append(" \"logs_bloom\":\"" + Base64.encodeBase64String(recordFile.getLogsBloom()) + "\",");
             fields.append(" \"name\":\"" + recordFile.getName() + "\",");
-            fields.append(" \"size\":\"" + recordFile.getSize() + "\"}\"");
+            fields.append(" \"size\":\"" + recordFile.getSize() + "\"}");
             recordFileJsonAppender(fields.toString(), recordFileContents, "fields", false);
 
             recordFileContents.append(" }\n");
@@ -448,7 +448,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
         for (int i = 0; i < count; i++) {
             AssessedCustomFee assessedCustomFee = tr.getAssessedCustomFees(i);
             if (i == 0) {
-                output.append("\"[");
+                output.append("[");
             } else {
                 output.append(",");
             }
@@ -467,7 +467,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             output.append(" \"token_id\":\"" + tokenId.toString() + "\"");
             output.append("}");
         }
-        output.append(" ]\"");
+        output.append(" ]");
         return output.toString();
     }
 
@@ -487,7 +487,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 if (atLeastOneTokenFound) {
                     output.append(",");
                 } else {
-                    output.append("\"[");
+                    output.append("[");
                     atLeastOneTokenFound = true;
                 }
                 AccountAmount accountAmount = tokenTransfers.get(tokenTransferCounter);
@@ -506,7 +506,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             }
         }
         if (output.length() > 0) {
-            output.append(" ]\"");
+            output.append(" ]");
         }
         return output.toString();
     }
@@ -518,7 +518,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
         TransferList transferList = tr.getTransferList();
         int transferCount = transferList.getAccountAmountsCount();
         if (transferCount > 0) {
-            output.append(" \"[");
+            output.append(" [");
             for (int i = 0; i < transferCount; ++i) {
                 var aa = transferList.getAccountAmounts(i);
                 EntityId account = EntityId.of(aa.getAccountID());
@@ -535,7 +535,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                     output.append(",");
                 }
             }
-            output.append(" ]\"");
+            output.append(" ]");
         }
         return output.toString();
     }
@@ -595,7 +595,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             if (atLeastOneLogFound) {
                 output.append(",");
             } else {
-                output.append("\"[");
+                output.append("[");
                 atLeastOneLogFound = true;
             }
             output.append(" {");
@@ -627,7 +627,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             output.append(" }");
         };
         if (output.length() > 0) {
-            output.append(" ]\"");
+            output.append(" ]");
         }
         return output.toString();
     }
@@ -636,7 +636,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     // the "contract_results" data items are found, we return an array of the one contract_result.
     private String buildContractResults(ContractFunctionResult contractResult, EntityId payerAccountId) {
         StringBuilder output = new StringBuilder();
-        output.append("\"[");
+        output.append("[");
         output.append(" {");
         output.append(" \"function_parameters\":\"");
         output.append(Base64.encodeBase64String(contractResult.getFunctionParameters().toByteArray()) + "\",");
@@ -671,7 +671,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
         output.append(" \"payer_account_number\":\"" + payerAccountId.getEntityNum() + "\",");
         output.append(" \"bloom\":\"");
         output.append(Base64.encodeBase64String(contractResult.getBloom().toByteArray()) + "\"");
-        output.append("} ]\"");
+        output.append("} ]");
         return output.toString();
     }
 
@@ -684,7 +684,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 if (atLeastOneStateChangeFound) {
                     output.append(",");
                 } else {
-                    output.append("\"[");
+                    output.append("[");
                     atLeastOneStateChangeFound = true;
                 }
 
@@ -704,7 +704,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
             }
         }
         if (output.length() > 0) {
-            output.append("]\"");
+            output.append("]");
         }
         return output.toString();
     }
