@@ -132,11 +132,11 @@ public class Transaction implements Persistable<Long> {
             // MYK -- to be determined -- append scheduled and nonce to this?
             return payerAccountId.toString() + "-" + seconds + "-" + nanos;
         } else if (designator.equalsIgnoreCase("fields")) {
-            final String quote = "\\\"";
+            final String quote = "\"";
             final String equals = "\":";
-            final String equalsString = "\\\":\\\"";
+            final String equalsString = "\":\"";
             final String comma = ",";
-            final String commaString = "\\\",";
+            final String commaString = "\",";
             StringBuilder sb = new StringBuilder()
                 .append("\"{ ")
                 .append(quote)
@@ -198,7 +198,7 @@ public class Transaction implements Persistable<Long> {
                 .append("errata")
                 .append(equalsString)
                 .append(errata == null ? "" : errata.name())
-                .append("\\\"}\"");
+                .append("\"}\"");
             return sb.toString();
         } else {
             return "\"Unknown designator\":\"" + designator + "\"";
