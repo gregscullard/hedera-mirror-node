@@ -104,7 +104,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
 
     // constants (e.g. Kafka properties)
     private static final HexFormat hex = HexFormat.of();
-    private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.129.99:9092";
+    private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.0.198:9092";
     private final static String TRANSACTION_TOPIC_NAME = "transaction_record";
     private final static String RECORD_FILE_TOPIC_NAME = "record_file";
 
