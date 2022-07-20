@@ -104,7 +104,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
 
     // constants (e.g. Kafka properties)
     private static final HexFormat hex = HexFormat.of();
-    private final static String KAFKA_BOOTSTRAP_SERVERS = "10.28.0.198:9092";
+    private final static String KAFKA_BOOTSTRAP_SERVERS = "kafka:9092";
     private final static String TRANSACTION_TOPIC_NAME = "transaction_record";
     private final static String RECORD_FILE_TOPIC_NAME = "record_file";
 
@@ -759,7 +759,12 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     // Kafka client functionality
     private static Producer<String, String> createKafkaProducer() {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS);
+        String kafkaServer = System.getenv("KAFKA_BOOTSTRAP_SERVER");
+        if (kafkaServer == null) {
+            kafkaServer = KAFKA_BOOTSTRAP_SERVERS;
+        }
+        log.warn("MYK: using Kafka Server (%s)", kafkaServer);
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         properties.put(ProducerConfig.CLIENT_ID_CONFIG, "ImporterForPinotKafkaProducer");
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
