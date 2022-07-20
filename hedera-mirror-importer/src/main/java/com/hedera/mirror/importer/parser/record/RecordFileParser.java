@@ -757,7 +757,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     }
 
     // Kafka client functionality
-    private static Producer<String, String> createKafkaProducer() {
+    private Producer<String, String> createKafkaProducer() {
         Properties properties = new Properties();
         String kafkaServer = System.getenv("KAFKA_BOOTSTRAP_SERVER");
         if (kafkaServer == null) {
