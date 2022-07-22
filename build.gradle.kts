@@ -19,16 +19,16 @@
  */
 
 plugins {
-    id("io.freefair.lombok") version "6.4.3.1"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.springframework.boot") version "2.7.0" apply false
+    id("io.freefair.lombok") version "6.5.0.3"
+    id("io.spring.dependency-management") version "1.0.12.RELEASE"
+    id("org.springframework.boot") version "2.7.2" apply false
 }
 
 description = "Hedera Mirror Node mirrors data from Hedera nodes and serves it via an API"
 
 allprojects {
     group = "com.hedera"
-    version = "0.60.0-SNAPSHOT"
+    version = "0.62.0-SNAPSHOT"
 
     configurations.all {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
@@ -42,7 +42,7 @@ subprojects {
 
     dependencyManagement {
         imports {
-            mavenBom("io.grpc:grpc-bom:1.47.0")
+            mavenBom("io.grpc:grpc-bom:1.48.0")
             mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         }
     }

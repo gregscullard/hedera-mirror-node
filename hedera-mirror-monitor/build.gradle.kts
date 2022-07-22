@@ -1,3 +1,6 @@
+import org.openapitools.codegen.CodegenConstants
+import org.openapitools.codegen.config.GlobalSettings
+
 /*-
  * ‌
  * Hedera Mirror Node
@@ -20,6 +23,7 @@
 
 plugins {
     id("java")
+    id("org.openapi.generator") version "6.0.1"
     id("org.springframework.boot")
 }
 
@@ -33,6 +37,7 @@ dependencies {
     implementation(libs.javaxInject)
     implementation(libs.micrometerExtra)
     implementation(libs.springdoc)
+    implementation(libs.swaggerAnnotations)
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("io.grpc:grpc-netty")
     implementation("io.grpc:grpc-stub")
@@ -50,4 +55,42 @@ dependencies {
     testImplementation(libs.meanbean)
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+openApiGenerate {
+    val openApiPackage = "com.hedera.mirror.rest"
+    GlobalSettings.clearProperty(CodegenConstants.APIS)
+
+    apiPackage.set("${openApiPackage}.api")
+    configOptions.set(
+        mapOf(
+            "developerEmail" to "",
+            "developerName" to "",
+            "developerOrganization" to "",
+            "developerOrganizationUrl" to "",
+            "interfaceOnly" to "true",
+            "licenseName" to "Apache License 2.0",
+            "licenseUrl" to "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            "openApiNullable" to "false",
+            "performBeanValidation" to "true",
+            "useBeanValidation" to "true",
+        )
+    )
+    generateApiTests.set(false)
+    generateModelTests.set(false)
+    generatorName.set("java")
+    inputSpec.set("$rootDir/hedera-mirror-rest/api/v1/openapi.yml".toString())
+    invokerPackage.set("${openApiPackage}.handler")
+    library.set("webclient")
+    modelPackage.set("${openApiPackage}.model")
+    //outputDir.set("$buildDir/generated/openapi")
+    typeMappings.set(mapOf("Timestamp" to "String"))
+}
+
+tasks.withType<JavaCompile> {
+    dependsOn("openApiGenerate")
+}
+
+java.sourceSets["main"].java {
+    srcDir(openApiGenerate.outputDir)
 }

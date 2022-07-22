@@ -32,9 +32,8 @@ dependencyManagement {
 }
 
 dependencies {
-    testImplementation(libs.commonsCodec)
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation(libs.hederaSdk)
-    testImplementation(libs.guava)
     testImplementation(libs.javaxInject)
     testImplementation("io.cucumber:cucumber-java")
     testImplementation("io.cucumber:cucumber-junit-platform-engine")
@@ -43,16 +42,17 @@ dependencies {
     testImplementation("org.apache.commons:commons-lang3")
     testImplementation("org.junit.platform:junit-platform-suite")
     testImplementation("org.springframework.boot:spring-boot-autoconfigure")
-    testImplementation("org.springframework.boot:spring-boot-configuration-processor")
+    testImplementation("org.springframework.boot:spring-boot-starter-aop")
     testImplementation("org.springframework.boot:spring-boot-starter-log4j2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-validation")
-    testImplementation("org.springframework.retry:spring-retry")
-    testImplementation("org.springframework.boot:spring-boot-starter-aop")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+    testImplementation("org.springframework.retry:spring-retry")
 }
 
 tasks.withType<Test> {
+    jvmArgs = listOf("-Xmx1024m", "-Xms1024m")
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
     useJUnitPlatform {
         excludeTags("acceptance")
     }
