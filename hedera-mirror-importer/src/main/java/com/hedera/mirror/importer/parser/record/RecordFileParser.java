@@ -513,7 +513,7 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
                 entities.add(accountId.getEntityNum());
                 long amount = accountAmount.getAmount();
                 boolean isApproval = accountAmount.getIsApproval();
-                output.append(" \"{");
+                output.append(" {");
                 output.append(" \"account\":\"" + accountId.toString() + "\",");
                 output.append(" \"account_shard\":\"" + accountId.getShardNum() + "\",");
                 output.append(" \"account_realm\":\"" + accountId.getRealmNum() + "\",");
