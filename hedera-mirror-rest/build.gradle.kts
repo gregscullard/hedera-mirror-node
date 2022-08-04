@@ -23,6 +23,7 @@ import com.github.gradle.node.npm.task.NpmTask
 description = "Hedera Mirror Node REST API"
 
 plugins {
+    `kotlin-dsl`
     id("com.github.node-gradle.node") version "3.4.0"
 }
 
@@ -36,6 +37,6 @@ val npmTest = tasks.register<NpmTask>("npmTest") {
     args.set(listOf("test"))
 }
 
-tasks.withType<Test> {
+tasks.build {
     dependsOn(npmTest)
 }
