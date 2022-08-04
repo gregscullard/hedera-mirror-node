@@ -24,7 +24,7 @@ plugins {
     id("org.springframework.boot") version "2.7.2" apply false
 }
 
-description = "Hedera Mirror Node mirrors data from Hedera nodes and serves it via an API"
+description = "Hedera Mirror Node ingests data from consensus nodes and serves it via an API"
 
 allprojects {
     group = "com.hedera"

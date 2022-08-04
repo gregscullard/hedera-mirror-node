@@ -20,7 +20,6 @@
 
 plugins {
     id("java-library")
-    id("org.springframework.boot")
 }
 
 description = "Hedera Mirror Node Test"
@@ -33,6 +32,7 @@ dependencyManagement {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-configuration-processor")
+    testImplementation(libs.guava)
     testImplementation(libs.hederaSdk)
     testImplementation(libs.javaxInject)
     testImplementation("io.cucumber:cucumber-java")

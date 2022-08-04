@@ -18,4 +18,24 @@
  * ‍
  */
 
+import com.github.gradle.node.npm.task.NpmTask
+
 description = "Hedera Mirror Node REST API"
+
+plugins {
+    id("com.github.node-gradle.node") version "3.4.0"
+}
+
+node {
+    download.set(true)
+    version.set("16.15.0")
+}
+
+val npmTest = tasks.register<NpmTask>("npmTest") {
+    dependsOn(tasks.npmInstall)
+    args.set(listOf("test"))
+}
+
+tasks.withType<Test> {
+    dependsOn(npmTest)
+}

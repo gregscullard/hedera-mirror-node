@@ -22,7 +22,7 @@ rootProject.name = "hedera-mirror-node"
 include(":hedera-mirror-common")
 include(":hedera-mirror-grpc")
 include(":hedera-mirror-importer")
-include(":hedera-mirror-monitor")
+//include(":hedera-mirror-monitor")
 include(":hedera-mirror-protobuf")
 include(":hedera-mirror-rest")
 include(":hedera-mirror-rosetta")
