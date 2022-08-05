@@ -18,33 +18,16 @@
  * ‍
  */
 
-import com.github.gradle.node.npm.task.NpmTask
-
-description = "Hedera Mirror Node REST API"
+description = "Hedera Mirror Node Monitor API"
 
 plugins {
     `kotlin-dsl`
-    id("com.github.node-gradle.node") version "3.4.0"
 }
 
-allprojects {
-    apply(plugin = "com.github.node-gradle.node")
-
-    node {
-        download.set(true)
-        version.set("16.16.0")
-    }
-}
-
-val npmTest = tasks.register<NpmTask>("npmTest") {
-    dependsOn(tasks.npmInstall)
-    args.set(listOf("test"))
+node {
+    nodeProjectDir.set(file("${project.projectDir}/monitor_apis"))
 }
 
 tasks.assemble {
     dependsOn(tasks.npmInstall)
-}
-
-tasks.build {
-    dependsOn(npmTest)
 }
